@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <script>
+        window.onload = function () {
+            // Variables
+            let baseDeDatos = [
+                {
+                    id: 1,
+                    nombre: 'Nike Hypervenom',
+                    precio: 2500,
+                    imagen: 'https://static.tiendaoficialamerica.com/produtos/tenis-de-futbol-nike-hypervenom-phade-tf/37/200-1537-337/200-1537-337_zoom1.jpg'
+                },
+                {
+                    id: 2,
+                    nombre: 'Adidas Air Max',
+                    precio: 3400,
+                    imagen: 'https://www.goodsale.org/wp-content/uploads/2017/04/Mens-Adidas-Trainer-Shoes-Cosmic-Marathon-Air-Max-3D-Black-White_1.jpg'
+                },
+                {
+                    id: 3,
+                    nombre: 'Fila Disruptor',
+                    precio: 1200,
+                    imagen: 'https://http2.mlstatic.com/tenis-fila-disruptor-ii-premium-unisex-blanco-2019-restock-D_NQ_NP_631743-MLM31234271881_062019-F.jpg'
+                },
+                {
+                    id: 4,
+                    nombre: 'Playera Sportline',
+                    precio: 599,
+                    imagen: 'https://cdn1.coppel.com/images/catalog/pr/1824872-3.jpg'
+                },
+                {
+                    id: 5,
+                    nombre: 'Balon Futbol Adidas',
+                    precio: 1200,
+                    imagen: 'https://assets.adidas.com/images/w_385,h_385,f_auto,q_auto:sensitive,fl_lossy/4e6dd9277e654e7caf4baaef010294f9_9366/balon-entrenamiento-uniforia.jpg'
+                },
+                {
+                    id: 6,
+                    nombre: 'Balon Futbol Nike',
+                    precio: 1750,
+                    imagen: 'https://static.netshoes.com.mx/produtos/balon-nike-strike-19/03/200-1822-103/200-1822-103_zoom1.jpg?'
+                },
+                {
+                    id: 7,
+                    nombre: 'Balon Futbol void',
+                    precio: 550,
+                    imagen: 'https://http2.mlstatic.com/D_NQ_NP_934357-MLM31231971578_062019-V.webp'
+                },
+                {
+                    id: 8,
+                    nombre: 'Balon Futbol Molten',
+                    precio: 460,
+                    imagen: 'https://spiro.mx/wp-content/uploads/2018/06/balon-futbol-5-molten-forza-f5g1500-01rojo.jpg'
+                },
+
+            ]
+            let $items = document.querySelector('#items');
+            let carrito = [];
+            let total = 0;
+            let $carrito = document.querySelector('#carrito');
+            let $total = document.querySelector('#total');
+            // Funciones
+            function renderItems () {
+                for (let info of baseDeDatos) {
+                    // Estructura
+                    let miNodo = document.createElement('div');
+                    miNodo.classList.add('card', 'col-sm-4');
+                    // Body
+                    let miNodoCardBody = document.createElement('div');
+                    miNodoCardBody.classList.add('card-body');
+                    // Titulo
+                    let miNodoTitle = document.createElement('h5');
+                    miNodoTitle.classList.add('card-title');
+                    miNodoTitle.textContent = info['nombre'];
+                    // Imagen
+                    let miNodoImagen = document.createElement('img');
+                    miNodoImagen.classList.add('img-fluid');
+                    miNodoImagen.setAttribute('src', info['imagen']);
+                    // Precio
+                    let miNodoPrecio = document.createElement('p');
+                    miNodoPrecio.classList.add('card-text');
+                    miNodoPrecio.textContent = info['precio'] + '$';
+                    // Boton 
+                    let miNodoBoton = document.createElement('button');
+                    miNodoBoton.classList.add('btn', 'btn-primary');
+                    miNodoBoton.textContent = '+';
+                    miNodoBoton.setAttribute('marcador', info['id']);
+                    miNodoBoton.addEventListener('click', anyadirCarrito);
+                    // Insertamos
+                    miNodoCardBody.appendChild(miNodoImagen);
+                    miNodoCardBody.appendChild(miNodoTitle);
+                    miNodoCardBody.appendChild(miNodoPrecio);
+                    miNodoCardBody.appendChild(miNodoBoton);
+                    miNodo.appendChild(miNodoCardBody);
+                    $items.appendChild(miNodo);
+                }
+            }
+
+            function anyadirCarrito () {
+                // Anyadimos el Nodo a nuestro carrito
+                carrito.push(this.getAttribute('marcador'))
+                // Calculo el total
+                calcularTotal();
+                // Renderizamos el carrito 
+                renderizarCarrito();
+            }
+
+            function renderizarCarrito () {
+                // Vaciamos todo el html
+                $carrito.textContent = '';
+                // Quitamos los duplicados
+                let carritoSinDuplicados = [...new Set(carrito)];
+                // Generamos los Nodos a partir de carrito
+                carritoSinDuplicados.forEach(function (item, indice) {
+                    // Obtenemos el item que necesitamos de la variable base de datos
+                    let miItem = baseDeDatos.filter(function(itemBaseDatos) {
+                        return itemBaseDatos['id'] == item;
+                    });
+                    // Cuenta el número de veces que se repite el producto
+                    let numeroUnidadesItem = carrito.reduce(function (total, itemId) {
+                        return itemId === item ? total += 1 : total;
+                    }, 0);
+                    // Creamos el nodo del item del carrito
+                    let miNodo = document.createElement('li');
+                    miNodo.classList.add('list-group-item', 'text-right', 'mx-2');
+                    miNodo.textContent = `${numeroUnidadesItem} x ${miItem[0]['nombre']} - ${miItem[0]['precio']}$`;
+                    // Boton de borrar
+                    let miBoton = document.createElement('button');
+                    miBoton.classList.add('btn', 'btn-danger', 'mx-5');
+                    miBoton.textContent = 'X';
+                    miBoton.style.marginLeft = '1rem';
+                    miBoton.setAttribute('item', item);
+                    miBoton.addEventListener('click', borrarItemCarrito);
+                    // Mezclamos nodos
+                    miNodo.appendChild(miBoton);
+                    $carrito.appendChild(miNodo);
+                })
+            }
+
+            function borrarItemCarrito () {
+                console.log()
+                // Obtenemos el producto ID que hay en el boton pulsado
+                let id = this.getAttribute('item');
+                // Borramos todos los productos
+                carrito = carrito.filter(function (carritoId) {
+                    return carritoId !== id;
+                });
+                // volvemos a renderizar
+                renderizarCarrito();
+                // Calculamos de nuevo el precio
+                calcularTotal();
+            }
+
+            function calcularTotal () {
+                // Limpiamos precio anterior
+                total = 0;
+                // Recorremos el array del carrito
+                for (let item of carrito) {
+                    // De cada elemento obtenemos su precio
+                    let miItem = baseDeDatos.filter(function(itemBaseDatos) {
+                        return itemBaseDatos['id'] == item;
+                    });
+                    total = total + miItem[0]['precio'];
+                }
+                // Formateamos el total para que solo tenga dos decimales
+                let totalDosDecimales = total.toFixed(2);
+                // Renderizamos el precio en el HTML
+                $total.textContent = totalDosDecimales;
+            }
+            // Eventos
+
+            // Inicio
+            renderItems();
+        } 
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <!-- Elementos generados a partir del JSON -->
+            <main id="items" class="col-sm-8 row"></main>
+            <!-- Carrito -->
+            <aside class="col-sm-4">
+                <h2>Carrito</h2>
+                <!-- Elementos del carrito -->
+                <ul id="carrito" class="list-group"></ul>
+                <hr>
+                <!-- Precio total -->
+                <p class="text-right">Total: <span id="total"></span>&dollar;;</p>
+            </aside>
+        </div>
+    </div>
+</body>
+</html>
